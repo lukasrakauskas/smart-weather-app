@@ -7,54 +7,29 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use App\Product;
 use Illuminate\Support\Str;
+use App\Forecast\Forecast;
+use App\Recommendation\Recommendation;
 
 class RecommendedController extends Controller
 {
-    public function index($cityParam)
+    private $forecast;
+    private $recommendation;
+
+    public function __construct(Forecast $forecast, Recommendation $recommendation)
     {
-        $city = ucfirst($cityParam);
+        $this->forecast = $forecast;
+        $this->recommendation = $recommendation;
+    }
 
-        $client = new Client();
-        try {
-            $response = $client->request('GET', 'https://api.meteo.lt/v1/places/' . $city . '/forecasts/long-term');            
-            $data = json_decode($response->getBody());
-            $weatherCondition = $data->forecastTimestamps[0]->conditionCode;
+    public function index($city)
+    {
+        $forecast = $this->forecast->getByCity($city);
 
-            if ($weatherCondition == 'na') {
-                return response()->json([
-                    'city' => $city,
-                    'current_weather' => 'Unknown'
-                ]);
-            }
+        if (array_key_exists('error', $forecast))
+            return response()->json($forecast, 404);
 
-            $recommendations = [
-                'clear' => ['sunglasses'],
-                'clouds' => ['sweater', 'coat'],
-                'overcast' => ['sweater', 'coat'],
-                'rain' => ['coat', 'wellington boots'],
-                'snow' => ['coat'],
-                'fog' => ['coat', 'sweater'],
-            ];
-                        
-            foreach (array_keys($recommendations) as $key) {
-                if (Str::contains($weatherCondition, $key)) {
-                    $keywords = $recommendations[$key];
-                }
-            }
+        $products = $this->recommendation->getProductsByForecast($forecast);
 
-            $products = Product::where(function ($query) use ($keywords) {
-                foreach ($keywords as $keyword) {
-                    $query->orWhere('name', 'like', '%' . $keyword . '%');
-                }
-            })->limit(3)->get()->makeHidden(['created_at', 'updated_at']);
-
-            return response()->json([
-                'city' => $city,
-                'current_weather' => $weatherCondition,
-                'recommended_products' => $products
-            ]);
-        } catch (ClientException $exception) {
-            return response()->json([ 'error'=> 404, 'message'=> 'City not found' ], 404);
-        }
+        return response()->json(array_merge($forecast, $products));
     }
 }
