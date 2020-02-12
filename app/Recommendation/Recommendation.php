@@ -4,9 +4,16 @@ namespace App\Recommendation;
 
 use Illuminate\Support\Str;
 use App\Product;
+use App\Product\ProductRepositoryInterface;
 
 class Recommendation
 {
+    private $productRepository;
+
+    public function __construct(ProductRepositoryInterface $productRepository) {
+        $this->productRepository = $productRepository;
+    }
+
     private $recommendations = [
         'clear' => ['sunglasses'],
         'clouds' => ['sweater', 'coat'],
@@ -27,11 +34,7 @@ class Recommendation
             }
         }
 
-        $products = Product::where(function ($query) use ($keywords) {
-            foreach ($keywords as $keyword) {
-                $query->orWhere('name', 'like', '%' . $keyword . '%');
-            }
-        })->limit(3)->get()->makeHidden(['created_at', 'updated_at']);
+        $products = $this->productRepository->getProductsByKeywords($keywords);
 
         return ['recommended_products' => $products];
     }
