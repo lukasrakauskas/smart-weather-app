@@ -25,6 +25,7 @@ Create a service, which returns product recommendations depending on current wea
     cd smart-weather-app
     composer install
     # Create .env file
+    php artisan migrate # To set up database
     php artisan db:seed # To generate fake data
     php artisan serve
     
