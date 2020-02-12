@@ -15,6 +15,7 @@ class Recommendation implements RecommendationInterface
     }
 
     private $recommendations = [
+        'sleet' => ['coat', 'wellington boots', 'sweater'],
         'clear' => ['sunglasses'],
         'clouds' => ['sweater', 'coat'],
         'overcast' => ['sweater', 'coat'],
@@ -27,6 +28,8 @@ class Recommendation implements RecommendationInterface
     {
         if (empty($forecast))
             return [];
+
+        $keywords = [];
 
         foreach (array_keys($this->recommendations) as $key) {
             if (Str::contains($forecast['current_weather'], $key)) {
