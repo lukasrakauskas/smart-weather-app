@@ -12,6 +12,6 @@ class ProductRepository implements ProductRepositoryInterface
             foreach ($keywords as $keyword) {
                 $query->orWhere('name', 'like', '%' . $keyword . '%');
             }
-        })->limit(3)->get()->makeHidden(['created_at', 'updated_at']);
+        })->get()->makeHidden(['created_at', 'updated_at']);
     }
 }
