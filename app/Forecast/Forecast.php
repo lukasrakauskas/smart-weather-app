@@ -7,16 +7,22 @@ use GuzzleHttp\Exception\ClientException;
 
 class Forecast implements ForecastInterface
 {
+    private $client;
+
+    public function __construct(Client $client)
+    {
+        $this->client = $client;
+    }
+
     public function getByCity($city)
     {
         if (empty($city)) {
             return ['error' => 404, 'message' => 'City not found'];
         }
 
-        $client = new Client();
         try {
             $url = $this->getRequestUrl($city);
-            $response = $client->request('GET', $url);
+            $response = $this->client->request('GET', $url);
             $forecastData = json_decode($response->getBody());
             $weatherCondition = $forecastData->forecastTimestamps[0]->conditionCode;
             $currentWeather = $weatherCondition == 'na' ? 'unknown' : $weatherCondition;
