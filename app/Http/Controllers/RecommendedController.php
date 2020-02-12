@@ -2,20 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use App\Product;
-use Illuminate\Support\Str;
-use App\Forecast\Forecast;
-use App\Recommendation\Recommendation;
+use App\Forecast\ForecastInterface;
+use App\Recommendation\RecommendationInterface;
 
 class RecommendedController extends Controller
 {
     private $forecast;
     private $recommendation;
 
-    public function __construct(Forecast $forecast, Recommendation $recommendation)
+    public function __construct(ForecastInterface $forecast, RecommendationInterface $recommendation)
     {
         $this->forecast = $forecast;
         $this->recommendation = $recommendation;
