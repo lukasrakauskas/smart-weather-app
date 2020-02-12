@@ -5,14 +5,14 @@ namespace App\Forecast;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 
-class Forecast
+class Forecast implements ForecastInterface
 {
     public function getByCity($city)
     {
         if (empty($city)) {
             return ['error' => 404, 'message' => 'City not found'];
         }
-    
+
         $client = new Client();
         try {
             $url = $this->getRequestUrl($city);
