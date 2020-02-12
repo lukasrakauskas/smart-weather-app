@@ -8,6 +8,9 @@ class ProductRepository implements ProductRepositoryInterface
 {
     public function getProductsByKeywords($keywords)
     {
+        if (empty($keywords))
+            return [];
+
         return Product::where(function ($query) use ($keywords) {
             foreach ($keywords as $keyword) {
                 $query->orWhere('name', 'like', '%' . $keyword . '%');
