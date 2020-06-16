@@ -1,5 +1,9 @@
 # Smart Weather App
 
+## Task
+
+https://github.com/lukasrakauskas/smart-weather-app/blob/master/Back%20End%20task.pdf
+
 ## Challenge
 
 Create a service, which returns product recommendations depending on current weather.
